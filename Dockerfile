@@ -25,7 +25,7 @@ ENV KAFKA_PORT "9092"
 ENV ZOOKEEPER_CONENCTION "localhost:2181"
 
 RUN apk add --no-cache \
-    bash 
+    bash libc6-compat
 
 COPY ${kafka_directory} /opt/apache/kafka
 COPY ./etc /etc
