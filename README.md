@@ -49,5 +49,5 @@ override any of these by setting the following environment variables in your run
 |-----------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------|
 | KAFKA_HOST            | localhost     | The hostname which resolves to the Kafka container.                                                                           |
 | KAFKA_PORT            | 9092          | The port on which Kafka listens.                                                                                              |
-| ZOOKEEPER_CONENCTION  | localhost:2181| A comma separated host:port pairs string for zk                                                                               |
+| ZOOKEEPER_CONNECTION  | localhost:2181| A comma separated host:port pairs string for zk                                                                               |
 | HOSTNAME              | localhost-0   | (optional) If running more than one kafka node, pass in this variable in a hostname-index format to specify the broker id     |
