@@ -22,7 +22,7 @@ ARG scala_version
 
 ENV KAFKA_HOST "localhost"
 ENV KAFKA_PORT "9092"
-ENV ZOOKEEPER_CONENCTION "localhost:2181"
+ENV ZOOKEEPER_CONNECTION "localhost:2181"
 
 RUN apk add --no-cache \
     bash libc6-compat
