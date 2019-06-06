@@ -1,47 +1,49 @@
-# Copyright 2019 Decipher Technology Studios
+#   Copyright 2019 Decipher Technology Studios
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#       http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 
-FROM java:8-jre-alpine
+FROM alpine:3.9
 
-LABEL maintainer="Chris Smith <chris.smith@deciphernow.com>"
+LABEL maintainer=engineering@deciphernow.com
 
-ARG kafka_directory
-ARG kafka_version
-ARG scala_version
+ARG VERSION
 
-ENV KAFKA_HOST "localhost"
-ENV KAFKA_PORT "9092"
-ENV ZOOKEEPER_CONNECTION "localhost:2181"
+ENV ADVERTISED_ADDRESS localhost
+ENV ADVERTISED_PORT 9092
+ENV LISTENER_ADDRESS 0.0.0.0
+ENV LISTENER_PORT 9092
+ENV ZOOKEEPER_ENSEMBLE localhost:2181
 
 RUN apk add --no-cache \
-    bash libc6-compat
+  bash \
+  curl \
+  openjdk8 \
+  ruby
 
-COPY ${kafka_directory} /opt/apache/kafka
-COPY ./etc /etc
-COPY ./usr /usr
+WORKDIR /opt/apache/kafka
 
-RUN chgrp -R 0 /opt/apache/kafka \
-    && chgrp -R 0 /etc \
-    && chgrp -R 0 usr \
-    && chgrp -R 0 /var \
-    && chmod -R g=u /opt/apache/kafka \
-    && chmod -R g=u /usr \
-    && chmod -R g=u /etc \
-    && chmod -R g=u /var
+RUN curl -L http://www-us.apache.org/dist/kafka/${VERSION}/kafka_2.12-${VERSION}.tgz | tar -xz --strip-components=1
 
+COPY /files /
+
+RUN mkdir -p /var/lib/kafka
+RUN chown -R 0:0 /opt/apache/kafka /var/lib/kafka
+RUN chmod -R g=u /opt/apache/kafka /var/lib/kafka
+
+EXPOSE 9092/tcp
 USER 1000
+VOLUME /var/lib/kafka
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 
-CMD ["/opt/apache/kafka/bin/kafka-server-start.sh", "/etc/kafka/server.properties"]
+CMD ["/opt/apache/kafka/bin/kafka-server-start.sh", "/opt/apache/kafka/config/server.properties"]

@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+#   Copyright 2019 Decipher Technology Studios
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+require 'erb'
+
+Context = Struct.new(:values) do
+    def render(template, destination)
+        File.open(destination, 'w') do |file|
+            file.write(ERB.new(File.read(template)).result(binding))
+        end
+    end
+end
+
+templates = {
+    '/usr/local/etc/entrypoint/log4j.properties.erb'  => '/opt/apache/kafka/config/log4j.properties',
+    '/usr/local/etc/entrypoint/server.properties.erb' => '/opt/apache/kafka/config/server.properties',
+}
+
+context = Context.new({
+    'advertised_address' => ENV['ADVERTISED_ADDRESS'],
+    'advertised_port'    => ENV['ADVERTISED_PORT'],
+    'listener_address'   => ENV['LISTENER_ADDRESS'],
+    'listener_port'      => ENV['LISTENER_PORT'],
+    'zookeeper_ensemble' => ENV['ZOOKEEPER_ENSEMBLE'],
+})
+
+templates.each { |template, destination| context.render(template, destination) }
+
+exec ARGV.join(' ')
