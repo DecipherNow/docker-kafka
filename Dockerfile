@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-FROM alpine:3.9
+FROM alpine:3.10
 
 LABEL maintainer=engineering@deciphernow.com
 
@@ -27,8 +27,14 @@ ENV ZOOKEEPER_ENSEMBLE localhost:2181
 RUN apk add --no-cache \
   bash \
   curl \
+  java-snappy \
   openjdk8 \
   ruby
+
+# required to support snappy compression requirements for glibc
+RUN curl -sSL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub > /etc/apk/keys/sgerrand.rsa.pub
+RUN curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk > /tmp/glibc-2.30-r0.apk
+RUN apk add --no-cache tmp/glibc-2.30-r0.apk
 
 WORKDIR /opt/apache/kafka
 
