@@ -16,9 +16,11 @@
 set -e
 
 BUILD_DIRECTORY="$(date +%s)"
-KAFKA_MIRROR="${KAFKA_MIRROR:-http://www-us.apache.org/dist/kafka}"
+KAFKA_MIRROR="${KAFKA_MIRROR:-https://archive.apache.org/dist/kafka}"
 KAFKA_VERSION="${KAFKA_VERSION:-2.1.0}"
 SCALA_VERSION="${SCALA_VERSION:-2.11}"
+
+SOCKET_REQUEST_MAX_BYTES="${SOCKET_REQUEST_MAX_BYTES:-104857600}"
 
 mkdir -p "${BUILD_DIRECTORY}"
 
